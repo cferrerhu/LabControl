@@ -49,45 +49,48 @@ app.layout = html.Div(html.Div(
     dcc.Graph(id='live-update-graph'),
     dcc.Interval(id='interval-component',interval=100, n_intervals=0),
     html.Div([
-        html.Div([html.H4('Tanque 1'),
+        html.Div([html.H4('Tanque 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Tank(id='tank-1', value=5, min=0, max=50,
                 showCurrentValue=True, units='cm',
                 style={'margin-left': '50px'})], style={'display':
                     'inline-block'}),
-        html.Div([html.H4('Tanque 2'),
+        html.Div([html.H4('Tanque 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Tank(id='tank-2', value=5, min=0, max=50,
                 showCurrentValue=True, units='cm',
                 style={'margin-left': '50px'})], style={'display':
-                    'inline-block'})]),
-        html.Div([html.H4('Tanque 3'),
+                    'inline-block'}),
+        html.Div([html.H4('Tanque 3', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Tank(id='tank-3', value=5, min=0, max=50,
                 showCurrentValue=True, units='cm',
                 style={'margin-left': '50px'})], style={'display':
                     'inline-block'}),
-        html.Div([html.H4('Tanque 4'),
+        html.Div([html.H4('Tanque 4', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Tank(id='tank-4', value=5, min=0, max=50,
                 showCurrentValue=True, units='cm',
                 style={'margin-left': '50px'})], style={'display':
-                    'inline-block'})]
-        ),
+                    'inline-block'}),
+        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    ),
+    html.Div([
         html.Div([
+            html.H4('Válvula 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Gauge(
                 id='valve-1',
                 min=-1,
                 max=1,
                 value=0.5
-            ),
+                )], style={'display':'inline-block'}),
+        html.Div([
+            html.H4('Válvula 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Gauge(
                 id='valve-2',
                 min=-1,
                 max=1,
                 value=0.5
-            )
-        ])
+            )], style={'display':'inline-block'})
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
     )
-    ]
-))
+]))
 
 
 @app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
