@@ -45,8 +45,8 @@ def imprimir_lista(lista):
 ########################################################################
 ########################################################################
 
-y1 = 0.7
-y2 = 0.6
+y1 = 0.4 #0.7
+y2 = 0.4 #0.6
 
 A1 = 28
 A2 = 32
@@ -84,8 +84,8 @@ H = [H1, H2]
 
 H1.setPoint = 25
 H2.setPoint = 25
-h3_set = 0
-h4_set = 0
+h3_value = 0
+h4_value = 0
 
 while True:
     print('######PID########')
@@ -93,18 +93,24 @@ while True:
     H1.update(h1.get_value())
     H2.update(h2.get_value())
 
-    v1ff = (sqrt(2*g*h3_set)*a3)/((1-y2)*k2)
-    v2ff = (sqrt(2*g*h4_set)*a4)/((1-y1)*k1)
+    h3_value = h3.get_value()
+    h4_value = h4.get_value()
+    v1cc = (sqrt(2*g*h3_value))*a3/A1
+    v2cc = (sqrt(2*g*h4_value))*a4/A2
+
+    v1ff = (sqrt(2*g*h3_value)*a3)/((1-y2)*k2)
+    v2ff = (sqrt(2*g*h4_value)*a4)/((1-y1)*k1)
 
     print('')
     H1.status()
     H2.status()
 
-    V1 = (H1.u * 3.3) / 5
+    V1 = H1.u
     V2 = H2.u
+    print('V_PID', 'V1:{:.4f}'.format(H1.u), 'V2:{:.4f}'.format(H2.u))
+    print('Vcc', '1:{:.4f}'.format(v1cc), '2:{:.4f}'.format(v2cc))
 
 
-    print('V_PID', '{:.4f}'.format(V1), '{:.4f}'.format(V2))
 
     print('######PLANT########')
     print('h: ', end='')
