@@ -37,6 +37,12 @@ v2 = objects_node.get_child(['2:Proceso_Tanques', '2:Valvulas', '2:Valvula2', '2
 # Ratios
 r1 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon1', '2:gamma'])
 r2 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon2', '2:gamma'])
+
+y1 = 0.7
+y2 = 0.6
+r1.set_value(y1)
+r2.set_value(y2)
+
 values = [h1, h2, h3, h4, v1, v2, r1, r2]
 
 data_record = Record(values, 'csv')
