@@ -11,6 +11,7 @@ import plotly.graph_objects as go
 from collections import deque
 from opcua import Client
 from opcua import ua
+from Record import Record
 
 T = np.linspace(0,1000, 1001)
 t = 0
@@ -19,8 +20,6 @@ h1Deque = deque(maxlen=100)
 h2Deque = deque(maxlen=100)
 h3Deque = deque(maxlen=100)
 h4Deque = deque(maxlen=100)
-v1Deque = deque(maxlen=100)
-v2Deque = deque(maxlen=100)
 
 # Initialize opcua variables
 client = Client('opc.tcp://localhost:4840/freeopcua/server/')
@@ -38,6 +37,9 @@ v2 = objects_node.get_child(['2:Proceso_Tanques', '2:Valvulas', '2:Valvula2', '2
 r1 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon1', '2:gamma'])
 r2 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon2', '2:gamma'])
 values = [h1, h2, h3, h4, v1, v2, r1, r2]
+
+data_record = Record(values, 'csv')
+
 
 app = dash.Dash()
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
@@ -89,21 +91,39 @@ app.layout = html.Div(html.Div(
                 value=0.5
             )], style={'display':'inline-block'})
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    )
+    ),
+    html.Div([html.Div(id='file-selection', children='Select the file extension'),
+        dcc.Dropdown(
+            id='file-dropdown',
+            style={'height': '40px', 'width': '120px'},
+            options=[
+            {'label': 'csv file', 'value': 'csv'},
+            {'label': 'txt file', 'value': 'txt'},
+            {'label': 'npy file', 'value': 'npy'}
+            ],
+            value='csv'
+            ),
+        html.Div(id='dd-output-container'),
+        html.Div([
+            html.Button('Start Recording', id='btn_record', n_clicks=0),
+            html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
+            html.Div(id='my-button-div', children='No recording')
+        ])
+    ])
+    ]
 ]))
+
 
 
 @app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
 def UpdateGraph(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque, v2Deque
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque
 
     tDeque.append(t)
     h1Deque.append(h1.get_value())
     h2Deque.append(h2.get_value())
     h3Deque.append(h3.get_value())
     h4Deque.append(h4.get_value())
-    v1Deque.append(v1.get_value())
-    v2Deque.append(v2.get_value())
     t += 1
 
     data = {'time': list(tDeque), 'h1': list(h1Deque), 'h2': list(h2Deque),
@@ -151,19 +171,43 @@ def update_tank(n):
     value = round(h4Deque[-1], 3)
     return value
 
-@app.callback(dash.dependencies.Output('valve-1', 'value'), [Input('interval-component', 'n_intervals')])
-def update_tank(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque
-    value = round(v1Deque[-1], 3)
-    return value
 
-@app.callback(dash.dependencies.Output('valve-2', 'value'), [Input('interval-component', 'n_intervals')])
-def update_tank(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v2Deque
-    value = round(v2Deque[-1], 3)
-    return value
+
+
+@app.callback(
+    dash.dependencies.Output('dd-output-container', 'children'),
+    [dash.dependencies.Input('file-dropdown', 'value')])
+def update_output(value):
+    #global data_record
+    data_record.ext = value
+    return 'You have selected "{}" file extension to be storaged'.format(value)
+
+
+@app.callback(
+    dash.dependencies.Output(component_id='my-button-div', component_property='children'),
+    [dash.dependencies.Input('btn_record', 'n_clicks'),
+     dash.dependencies.Input('btn_norecord', 'n_clicks')])
+def record(btn_r, btn_nr):
+    ctx = dash.callback_context
+    print(f'ctx states:{ctx.states}')
+    print(f'ctx triggered:{ctx.triggered}')
+    print(f'ctx inputs:{ctx.inputs}')
+    if 'btn_record.n_clicks' in ctx.triggered[0].values():
+        if data_record.stopped:
+            data_record.start()
+
+        return 'Starting to record as '+str(data_record.ext)
+    elif 'btn_norecord.n_clicks' in ctx.triggered[0].values():
+
+        if not data_record.stopped:
+            data_record.stop()
+
+        if data_record.ext == 'npy':
+            return 'Stop recording, saved at wd with name '+str(data_record.namenpy)+'.'+str(data_record.ext)
+
+        return 'Stop recording, saved at wd with name '+str(data_record.name)+'.'+str(data_record.ext)
+
 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
