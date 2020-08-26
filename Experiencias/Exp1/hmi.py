@@ -12,6 +12,7 @@ from collections import deque
 from opcua import Client
 from opcua import ua
 from Record import Record
+from runpid import RunPID
 
 T = np.linspace(0,1000, 1001)
 t = 0
@@ -39,6 +40,7 @@ r2 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon2', '2:ga
 values = [h1, h2, h3, h4, v1, v2, r1, r2]
 
 data_record = Record(values, 'csv')
+run_pid = RunPID(values)
 
 
 app = dash.Dash()
@@ -109,6 +111,13 @@ app.layout = html.Div(html.Div(
             html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
             html.Div(id='my-button-div', children='No recording')
         ])
+    ]),
+    html.Div([
+     daq.BooleanSwitch(
+        id='my-boolean-switch',
+        on=False
+    ),
+    html.Div(id='boolean-switch-output', children='Manual Mode')
     ])
     ]
 ))
@@ -194,18 +203,31 @@ def record(btn_r, btn_nr):
     print(f'ctx inputs:{ctx.inputs}')
     if 'btn_record.n_clicks' in ctx.triggered[0].values():
         if data_record.stopped:
+
             data_record.start()
 
         return 'Starting to record as '+str(data_record.ext)
     elif 'btn_norecord.n_clicks' in ctx.triggered[0].values():
 
         if not data_record.stopped:
+
             data_record.stop()
 
         if data_record.ext == 'npy':
             return 'Stop recording, saved at wd with name '+str(data_record.namenpy)+'.'+str(data_record.ext)
 
         return 'Stop recording, saved at wd with name '+str(data_record.name)+'.'+str(data_record.ext)
+
+@app.callback(
+    dash.dependencies.Output('boolean-switch-output', 'children'),
+    [dash.dependencies.Input('my-boolean-switch', 'on')])
+def update_output(on):
+    if on:
+        run_pid.start()
+        return 'Automatic Mode'
+    else:
+        run_pid.stop()
+        return 'Manual mode'
 
 
 
