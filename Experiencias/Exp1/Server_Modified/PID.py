@@ -1,7 +1,7 @@
 import time
 
 class PID:
-    def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=1):
+    def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=[0, 1]):
         self.Kp = Kp
         self.Ki = Ki
         self.Kd = Kd
@@ -39,10 +39,10 @@ class PID:
 
         self.uOriginal = self.P + self.I + self.D
 
-        if self.uOriginal > self.umax:
-            self.u = self.umax
-        elif self.uOriginal < -self.umax:
-            self.u = -self.umax
+        if self.uOriginal > self.umax[1]:
+            self.u = self.umax[1]
+        elif self.uOriginal < self.umax[0]:
+            self.u = self.umax[0]
         else:
             self.u = self.uOriginal
 
