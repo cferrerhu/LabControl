@@ -50,8 +50,8 @@ class RunPID:
         self.g = 981
 
         # PID
-        self.Kp1 = 5
-        self.Kp2 = 5
+        self.Kp1 = 0.5
+        self.Kp2 = 0.5
         self.Ki1 = 0
         self.Ki2 = 0
         self.Kd1 = 0
@@ -62,8 +62,8 @@ class RunPID:
         self.H2 = PID(Kp=self.Kp2, Ki=self.Ki2, Kd=self.Kd2, Kw=self.Kw2)
 
         # Set point
-        self.setpoint1 = 25
-        self.setpoint2 = 25
+        self.setpoint1 = 30
+        self.setpoint2 = 30
         self.h3_set = 0
         self.h4_set = 0
 
@@ -106,7 +106,7 @@ class RunPID:
             self.H1.status()
             self.H2.status()
 
-            V1 = (self.H1.u * 3.3) / 5
+            V1 = self.H1.u
             V2 = self.H2.u
 
             print('V_PID', '{:.4f}'.format(V1), '{:.4f}'.format(V2))
@@ -129,3 +129,7 @@ class RunPID:
                 self.v[1].set_value(V2)
             else:
                 self.v[1].set_value(V2/abs(V2))
+
+            print()
+
+
