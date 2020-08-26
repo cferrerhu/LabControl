@@ -22,6 +22,8 @@ h1Deque = deque(maxlen=100)
 h2Deque = deque(maxlen=100)
 h3Deque = deque(maxlen=100)
 h4Deque = deque(maxlen=100)
+v1Deque = deque(maxlen=100)
+v2Deque = deque(maxlen=100)
 
 # Initialize opcua variables
 client = Client('opc.tcp://localhost:4840/freeopcua/server/')
@@ -87,17 +89,21 @@ app.layout = html.Div(html.Div(
             html.H4('Válvula 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Gauge(
                 id='valve-1',
-                min=-1,
-                max=1,
-                value=0.5
+                showCurrentValue=True,
+                units="%",
+                min=0,
+                max=100,
+                value=50
                 )], style={'display':'inline-block'}),
         html.Div([
             html.H4('Válvula 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
             daq.Gauge(
                 id='valve-2',
-                min=-1,
-                max=1,
-                value=0.5
+                showCurrentValue=True,
+                units="%",
+                min=0,
+                max=100,
+                value=50
             )], style={'display':'inline-block'})
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
     ),
@@ -120,31 +126,34 @@ app.layout = html.Div(html.Div(
         ])
     ]),
     html.Div([
-     daq.BooleanSwitch(
-        id='my-boolean-switch',
-        on=False
-    ),
-    html.Div(id='boolean-switch-output', children='Manual Mode'),
-    html.I("Set the Setpoints for the tanks."),
-    html.Br(),
-    dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1", debounce=True),
-    dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2", debounce=True),
-    html.Div(id="output")
-    ])
-    ]
-))
+        daq.PowerButton(
+            id='my-boolean-switch',
+            on=False
+        ),
+        html.Div(id='boolean-switch-output', children='Manual Mode'),
+        html.I("Set the Setpoints for the tanks."),
+        html.Br(),
+        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1", debounce=True),
+        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2", debounce=True),
+        html.Div(id="output")
+    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    )
+]))
+
 
 
 
 @app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
 def UpdateGraph(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque, v2Deque
 
     tDeque.append(t)
     h1Deque.append(h1.get_value())
     h2Deque.append(h2.get_value())
     h3Deque.append(h3.get_value())
     h4Deque.append(h4.get_value())
+    v1Deque.append(v1.get_value())
+    v2Deque.append(v2.get_value())
     t += 1
 
     data = {'time': list(tDeque), 'h1': list(h1Deque), 'h2': list(h2Deque),
@@ -192,7 +201,17 @@ def update_tank(n):
     value = round(h4Deque[-1], 3)
     return value
 
+@app.callback(dash.dependencies.Output('valve-1', 'value'), [Input('interval-component', 'n_intervals')])
+def update_tank(n):
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque
+    value = round(v1Deque[-1], 3)*100
+    return value
 
+@app.callback(dash.dependencies.Output('valve-2', 'value'), [Input('interval-component', 'n_intervals')])
+def update_tank(n):
+    global t, tDeque, h1Deque, h2Deque, h3Deque, v2Deque
+    value = round(v2Deque[-1], 3)*100
+    return value
 
 
 @app.callback(
