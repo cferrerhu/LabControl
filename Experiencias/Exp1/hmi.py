@@ -125,14 +125,14 @@ app.layout = html.Div(html.Div(
         ])
     ]),
     html.Div([
-     daq.BooleanSwitch(
-        id='my-boolean-switch',
-        on=False
-    ),
-    html.Div(id='boolean-switch-output', children='Manual Mode')
-    ])
-    ]
-))
+        daq.PowerButton(
+            id='my-boolean-switch',
+            on=False
+        ),
+        html.Div(id='boolean-switch-output', children='Manual Mode')
+    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    )
+]))
 
 
 
