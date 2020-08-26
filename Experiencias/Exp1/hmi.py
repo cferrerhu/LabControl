@@ -41,10 +41,17 @@ v2 = objects_node.get_child(['2:Proceso_Tanques', '2:Valvulas', '2:Valvula2', '2
 r1 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon1', '2:gamma'])
 r2 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon2', '2:gamma'])
 
-y1 = 0.7
+# Initial conditions
+y1 = 0.6
 y2 = 0.6
 r1.set_value(y1)
 r2.set_value(y2)
+h1.set_value(20)
+h2.set_value(20)
+h3.set_value(20)
+h4.set_value(20)
+v1.set_value(0)
+v2.set_value(0)
 
 values = [h1, h2, h3, h4, v1, v2, r1, r2]
 
