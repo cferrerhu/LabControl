@@ -46,31 +46,54 @@ app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 
 
 app.layout = html.Div(html.Div(
-    [html.H2('Dashy: Mining water tank control'),
-     dcc.Graph(id='live-update-graph'),
-     dcc.Interval(id='interval-component',interval=100, n_intervals=0),
-     html.Div([
-         html.Div([
-             html.Div([html.H4('Tanque 1'),
-                 daq.Tank(id='tank-1', value=5, min=0, max=50,
-                     showCurrentValue=True, units='cm',
-                     style={'margin-left': '50px'})], style={'display': 'inline-block'}),
-             html.Div([html.H4('Tanque 2'),
-                 daq.Tank(id='tank-2', value=5, min=0, max=50,
-                     showCurrentValue=True, units='cm',
-                     style={'margin-left': '50px'})], style={'display': 'inline-block'})]),
-         html.Div([
-             html.Div([html.H4('Tanque 3'),
-                 daq.Tank(id='tank-3', value=5, min=0, max=50,
-                     showCurrentValue=True, units='cm',
-                     style={'margin-left': '50px'})], style={'display': 'inline-block'}),
-             html.Div([html.H4('Tanque 4'),
-                 daq.Tank(id='tank-4', value=5, min=0, max=50,
-                     showCurrentValue=True, units='cm',
-                     style={'margin-left': '50px'})], style={'display': 'inline-block'})])
-                 ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+    [
+    html.H2('Dashy: Mining water tank control'),
+    dcc.Graph(id='live-update-graph'),
+    dcc.Interval(id='interval-component',interval=100, n_intervals=0),
+    html.Div([
+        html.Div([html.H4('Tanque 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+            daq.Tank(id='tank-1', value=5, min=0, max=50,
+                showCurrentValue=True, units='cm',
+                style={'margin-left': '50px'})], style={'display':
+                    'inline-block'}),
+        html.Div([html.H4('Tanque 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+            daq.Tank(id='tank-2', value=5, min=0, max=50,
+                showCurrentValue=True, units='cm',
+                style={'margin-left': '50px'})], style={'display':
+                    'inline-block'}),
+        html.Div([html.H4('Tanque 3', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+            daq.Tank(id='tank-3', value=5, min=0, max=50,
+                showCurrentValue=True, units='cm',
+                style={'margin-left': '50px'})], style={'display':
+                    'inline-block'}),
+        html.Div([html.H4('Tanque 4', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+            daq.Tank(id='tank-4', value=5, min=0, max=50,
+                showCurrentValue=True, units='cm',
+                style={'margin-left': '50px'})], style={'display':
+                    'inline-block'}),
+        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    ),
+    html.Div([
+        html.Div([
+            html.H4('Válvula 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+            daq.Gauge(
+                id='valve-1',
+                min=-1,
+                max=1,
+                value=0.5
+                )], style={'display':'inline-block'}),
+        html.Div([
+            html.H4('Válvula 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+            daq.Gauge(
+                id='valve-2',
+                min=-1,
+                max=1,
+                value=0.5
+            )], style={'display':'inline-block'})
+        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    ),
     html.Div([html.Div(id='file-selection', children='Select the file extension'),
-    dcc.Dropdown(
+        dcc.Dropdown(
             id='file-dropdown',
             style={'height': '40px', 'width': '120px'},
             options=[
@@ -80,13 +103,16 @@ app.layout = html.Div(html.Div(
             ],
             value='csv'
             ),
-    html.Div(id='dd-output-container'),
-    html.Div([
-    html.Button('Start Recording', id='btn_record', n_clicks=0),
-    html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
-    html.Div(id='my-button-div', children='No recording')])])
+        html.Div(id='dd-output-container'),
+        html.Div([
+            html.Button('Start Recording', id='btn_record', n_clicks=0),
+            html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
+            html.Div(id='my-button-div', children='No recording')
+        ])
+    ])
     ]
-))
+]))
+
 
 
 @app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
