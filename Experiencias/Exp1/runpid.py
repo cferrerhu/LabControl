@@ -83,7 +83,8 @@ class RunPID:
         self.H2.setPoint = self.setpoint2
 
     def stop(self):
-        print('PID is stopping')
+        if not self.stopped:
+            print('PID is stopping')
         self.stopped = True
 
     def start(self):

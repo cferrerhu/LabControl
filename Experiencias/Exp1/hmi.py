@@ -6,6 +6,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
+
 import plotly
 import plotly.graph_objects as go
 from collections import deque
@@ -129,10 +130,16 @@ app.layout = html.Div(html.Div(
             id='my-boolean-switch',
             on=False
         ),
-        html.Div(id='boolean-switch-output', children='Manual Mode')
+        html.Div(id='boolean-switch-output', children='Manual Mode'),
+        html.I("Set the Setpoints for the tanks."),
+        html.Br(),
+        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1", debounce=True),
+        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2", debounce=True),
+        html.Div(id="output")
     ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
     )
 ]))
+
 
 
 
@@ -252,6 +259,21 @@ def update_output(on):
     else:
         run_pid.stop()
         return 'Manual mode'
+
+
+
+@app.callback(
+    Output("output", "children"),
+    [Input("setpoint1", "value"), Input("setpoint2", "value")],
+)
+def update_output(input1, input2):
+    if input1 is not None and input2 is not None:
+        run_pid.setpoint1 = input1
+        run_pid.setpoint2 = input2
+        run_pid.setPoint_pid()
+
+        return f'SetPoint Tank 1: {input1}, SetPoint Tank 2: {input2}'
+    return f'Nothing set'
 
 
 
