@@ -133,9 +133,25 @@ app.layout = html.Div(html.Div(
         html.Div(id='boolean-switch-output', children='Manual Mode'),
         html.I("Set the Setpoints for the tanks."),
         html.Br(),
-        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1", debounce=True),
-        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2", debounce=True),
+        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
+        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
         html.Div(id="output")
+    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    ),
+    html.Div([
+        html.I("Set the Voltage for the valves, from 0 to 1 [V]"),
+        html.Br(),
+        dcc.Input(id="Voltage1", type="number", placeholder="Voltage 1", debounce=True),
+        dcc.Input(id="Voltage2", type="number", placeholder="Voltage 2", debounce=True),
+        html.Div(id="Voltage-output")
+    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+    ),
+    html.Div([
+        html.I("Set the flux Rate between 0 and 1" ),
+        html.Br(),
+        dcc.Input(id="Gamma1", type="number", placeholder="Flux Rate 1", debounce=True),
+        dcc.Input(id="Gamma2", type="number", placeholder="Flux Rate 2", debounce=True),
+        html.Div(id="Gamma-output")
     ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
     )
 ]))
@@ -267,13 +283,90 @@ def update_output(on):
     [Input("setpoint1", "value"), Input("setpoint2", "value")],
 )
 def update_output(input1, input2):
-    if input1 is not None and input2 is not None:
-        run_pid.setpoint1 = input1
-        run_pid.setpoint2 = input2
-        run_pid.setPoint_pid()
+    # ctx = dash.callback_context
+    # if input1 is not None and input2 is not None:
+    #     run_pid.setpoint1 = input1
+    #     run_pid.setpoint2 = input2
+    #     run_pid.setPoint_pid()
+    #
+    #     return f'SetPoint Tank 1: {input1}, SetPoint Tank 2: {input2}'
+    # return f'Nothing set'
+    ctx = dash.callback_context
+    if 'setpoint1.value' in ctx.triggered[0].values() and input1 is not None:
+        if input1 <= 50 and input1 >=0:
+            run_pid.setpoint1 = input1
+            return f'SetPoint Tank 1: {input1}'
+        else:
+            return 'Set the SetPoint of Tank 1 between 0 and 50'
 
-        return f'SetPoint Tank 1: {input1}, SetPoint Tank 2: {input2}'
-    return f'Nothing set'
+    if 'setpoint2.value' in ctx.triggered[0].values() and input2 is not None:
+        if input2 <= 50 and input2 >=0:
+            run_pid.setpoint2 = input2
+            return f'SetPoint Tank 2: {input2}'
+        else:
+            return 'Set the SetPoint of Tank 2 between 0 and 50'
+
+
+    if input1 is not None and input2 is not None:
+        return f'Nothing set'
+
+
+
+
+
+
+@app.callback(
+    Output("Voltage-output", "children"),
+    [Input("Voltage1", "value"), Input("Voltage2", "value")],
+)
+def update_output(input1, input2):
+    ctx = dash.callback_context
+    if 'Voltage1.value' in ctx.triggered[0].values() and input1 is not None:
+        if input1 <= 1 and input1 >=0:
+            v1 = values[4]
+            v1.set_value(input1)
+            return f'Voltage 1: {input1}'
+        else:
+            return 'Set voltage 1 between 0 and 1 [V]'
+
+    if 'Voltage2.value' in ctx.triggered[0].values() and input2 is not None:
+        if input2 <= 1 and input2 >=0:
+            v2 = values[5]
+            v2.set_value(input2)
+            return f'Voltage 2: {input2}'
+        else:
+            return 'Set voltage 2 between 0 and 1 [V]'
+
+
+    if input1 is not None and input2 is not None:
+        return f'Nothing set'
+
+
+@app.callback(
+    Output("Gamma-output", "children"),
+    [Input("Gamma1", "value"), Input("Gamma2", "value")],
+)
+def update_output(input1, input2):
+    ctx = dash.callback_context
+    if 'Gamma1.value' in ctx.triggered[0].values() and input1 is not None:
+        if input1 <= 1 and input1 >=0:
+            r1 = values[6]
+            r1.set_value(input1)
+            return f'Flux Rate 1: {input1}'
+        else:
+            return 'Set the Flux Rate 1 between 0 and 1'
+
+    if 'Gamma2.value' in ctx.triggered[0].values() and input2 is not None:
+        if input2 <= 1 and input2 >=0:
+            r2 = values[7]
+            r2.set_value(input2)
+            return f'Flux Rate  2: {input2}'
+        else:
+            return 'Set Flux Rate 2 between 0 and 1 '
+
+
+    if input1 is not None and input2 is not None:
+        return f'Nothing set'
 
 
 
