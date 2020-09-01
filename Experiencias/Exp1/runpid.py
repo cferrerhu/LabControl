@@ -61,6 +61,9 @@ class RunPID:
         self.H1 = PID(Kp=self.Kp1, Ki=self.Ki1, Kd=self.Kd1, Kw=self.Kw1)
         self.H2 = PID(Kp=self.Kp2, Ki=self.Ki2, Kd=self.Kd2, Kw=self.Kw2)
 
+        self.H1.name = 'T1'
+        self.H2.name = 'T2'
+
         # Set point
         self.setpoint1 = 30
         self.setpoint2 = 30
@@ -103,7 +106,7 @@ class RunPID:
             # self.v1ff = (sqrt(2*g*h3_set)*a3)/((1-y2)*k2)
             # self.v2ff = (sqrt(2*g*h4_set)*a4)/((1-y1)*k1)
 
-            print('')
+            print('######PID########')
             self.H1.status()
             self.H2.status()
 
@@ -113,8 +116,8 @@ class RunPID:
             print('V_PID', '{:.4f}'.format(V1), '{:.4f}'.format(V2))
 
             print('######PLANT########')
-            print('h: ', end='')
-            self.imprimir_lista(self.h)
+            print('hs', '{:.2f}'.format(self.h[2].get_value()), '{:.2f}'.format(self.h[3].get_value()))
+            print('hi', '{:.2f}'.format(self.h[0].get_value()), '{:.2f}'.format(self.h[1].get_value()))
 
 
             print('######SET########')
