@@ -135,13 +135,13 @@ app.layout = html.Div(html.Div(
     html.Div([
         daq.PowerButton(
             id='my-boolean-switch',
-            on=False
+            on= not run_pid.stopped
         ),
         html.Div(id='boolean-switch-output', children='Manual Mode'),
         html.I("Set the Setpoints for the tanks."),
         html.Br(),
-        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
-        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
+        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 15", debounce=True),
+        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 15", debounce=True),
         html.Div(id="output")
     ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
     ),
@@ -160,7 +160,28 @@ app.layout = html.Div(html.Div(
         dcc.Input(id="Gamma2", type="number", placeholder="Flux Rate 2", debounce=True),
         html.Div(id="Gamma-output")
     ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    )
+    ),
+    html.Div([html.Div(id='Variable-selection', children='Select the variable of the PID'),
+        dcc.Dropdown(
+            id='k-dropdown',
+            style={'height': '40px', 'width': '120px'},
+            options=[
+            {'label': 'Kp', 'value': 'Kp'},
+            {'label': 'Kd', 'value': 'Kd'},
+            {'label': 'Ki', 'value': 'Ki'},
+            {'label': 'Kw', 'value': 'Kw'}
+            ],
+            value=''
+            ),
+        html.Div([
+            html.I("Set the variable" ),
+            html.Br(),
+            dcc.Input(id="K1", type="number", placeholder="K1", debounce=True),
+            dcc.Input(id="K2", type="number", placeholder="K2", debounce=True),
+            html.Div(id="K-output")
+        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+        )
+    ])
 ]))
 
 
@@ -276,10 +297,10 @@ def record(btn_r, btn_nr):
     dash.dependencies.Output('boolean-switch-output', 'children'),
     [dash.dependencies.Input('my-boolean-switch', 'on')])
 def update_output(on):
-    if on:
+    if on == True:
         run_pid.start()
         return 'Automatic Mode'
-    else:
+    elif on == False:
         run_pid.stop()
         return 'Manual mode'
 
@@ -327,7 +348,7 @@ def update_output(input1, input2):
 
 
 @app.callback(
-    Output("Voltage-output", "children"),
+    [Output("Voltage-output", "children"), Output('my-boolean-switch', 'on')],
     [Input("Voltage1", "value"), Input("Voltage2", "value")],
 )
 def update_output(input1, input2):
@@ -336,21 +357,24 @@ def update_output(input1, input2):
         if input1 <= 1 and input1 >=0:
             v1 = values[4]
             v1.set_value(input1)
-            return f'Voltage 1: {input1}'
+
+            return f'Voltage 1: {input1}', False
         else:
-            return 'Set voltage 1 between 0 and 1 [V]'
+            return 'Set voltage 1 between 0 and 1 [V]', None
 
     if 'Voltage2.value' in ctx.triggered[0].values() and input2 is not None:
         if input2 <= 1 and input2 >=0:
             v2 = values[5]
             v2.set_value(input2)
-            return f'Voltage 2: {input2}'
+            return f'Voltage 2: {input2}', False
         else:
-            return 'Set voltage 2 between 0 and 1 [V]'
+            return 'Set voltage 2 between 0 and 1 [V]', None
 
 
     if input1 is not None and input2 is not None:
-        return f'Nothing set'
+        return f'Nothing set', None
+
+    return '', None
 
 
 @app.callback(
@@ -378,6 +402,54 @@ def update_output(input1, input2):
 
     if input1 is not None and input2 is not None:
         return f'Nothing set'
+
+
+
+@app.callback(
+    dash.dependencies.Output('K-output', 'children'),
+    [dash.dependencies.Input('k-dropdown', 'value'),
+    dash.dependencies.Input("K1", "value"),
+    dash.dependencies.Input("K2", "value")])
+def update_output(k, k1, k2):
+    ctx = dash.callback_context
+
+    if k == 'Kp':
+        if 'K1.value' in ctx.triggered[0].values() and k1 is not None:
+            run_pid.H1.Kp = k1
+            return f'{k}1 set to {k1}'
+        if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
+            run_pid.H2.Kp = k2
+            return f'{k}2 set to {k2}'
+
+    elif k == 'Kd':
+        if 'K1.value' in ctx.triggered[0].values() and k1 is not None:
+            run_pid.H1.Kd = k1
+            return f'{k}1 set to {k1}'
+        if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
+            run_pid.H2.Kd = k2
+            return f'{k}2 set to {k2}'
+
+    elif k == 'Ki':
+        if 'K1.value' in ctx.triggered[0].values() and k1 is not None:
+            run_pid.H1.Ki = k1
+            return f'{k}1 set to {k1}'
+        if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
+            run_pid.H2.Ki = k2
+            return f'{k}2 set to {k2}'
+
+    elif k == 'Kw':
+        if 'K1.value' in ctx.triggered[0].values() and k1 is not None:
+            run_pid.H1.Kw = k1
+            return f'{k}1 set to {k1}'
+        if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
+            run_pid.H2.Kw = k2
+            return f'{k}2 set to {k2}'
+
+
+
+
+
+    # return f'{k}, {k1}, {k2}'
 
 
 
