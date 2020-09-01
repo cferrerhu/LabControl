@@ -2,7 +2,7 @@ import time
 from scipy.integrate import odeint
 
 class PID:
-    def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=[0, 1]):
+    def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=[0, 1], debug=False):
         self.name = ''
         self.Kp = Kp
         self.Ki = Ki
@@ -28,10 +28,24 @@ class PID:
         self.u = 0
         self.uOriginal = 0
 
+        self.debug = debug
+
     def status(self):
-        print(self.name, end=': ')
-        print('P I D U', '{:.2f}'.format(self.P), '{:.2f}'.format(self.I), '{:.2f}'.format(self.D), '{:.2f}'.format(self.uOriginal))
-        #print('U Umod', '{:.2f}'.format(self.uOriginal), '{:.2f}'.format(self.u))
+        if self.debug:
+            print(self.name, end=': ')
+            print('P I D U', '{:.2f}'.format(self.P), '{:.2f}'.format(self.I), '{:.2f}'.format(self.D), '{:.2f}'.format(self.uOriginal))
+            #print('U Umod', '{:.2f}'.format(self.uOriginal), '{:.2f}'.format(self.u))
+        state = {}
+        state['e_P'] = self.P
+        state['e_I'] = self.I
+        state['e_D'] = self.D
+        state['k_P'] = self.Kp
+        state['k_I'] = self.Ki
+        state['k_D'] = self.Kd
+        state['k_w'] = self.Kw
+        state['u'] = self.u
+        state['uO'] = self.uOriginal
+        return state
 
 
 

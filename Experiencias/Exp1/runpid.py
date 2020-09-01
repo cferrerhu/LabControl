@@ -8,7 +8,8 @@ from math import sqrt
 
 class RunPID:
 
-    def __init__(self, values):
+    def __init__(self, values, debug=False):
+        self.debug = debug
         # self.client = Client('opc.tcp://localhost:4840/freeopcua/server/')
         # self.client.connect()
         #
@@ -50,29 +51,31 @@ class RunPID:
         self.g = 981
 
         # PID
-        self.Kp1 = 0.5
-        self.Kp2 = 0.5
-        self.Ki1 = 0
-        self.Ki2 = 0
-        self.Kd1 = 0
-        self.Kd2 = 0
-        self.Kw1 = 0
-        self.Kw2 = 0
-        self.H1 = PID(Kp=self.Kp1, Ki=self.Ki1, Kd=self.Kd1, Kw=self.Kw1)
-        self.H2 = PID(Kp=self.Kp2, Ki=self.Ki2, Kd=self.Kd2, Kw=self.Kw2)
+        self.Kp1 = 5
+        self.Kp2 = 5
+        self.Ki1 = 0.5
+        self.Ki2 = 0.5
+        self.Kd1 = 0.1
+        self.Kd2 = 0.1
+        self.Kw1 = 0.02
+        self.Kw2 = 0.02
+        self.H1 = PID(Kp=self.Kp1, Ki=self.Ki1, Kd=self.Kd1, Kw=self.Kw1, debug=debug)
+        self.H2 = PID(Kp=self.Kp2, Ki=self.Ki2, Kd=self.Kd2, Kw=self.Kw2, debug=debug)
 
         self.H1.name = 'T1'
         self.H2.name = 'T2'
 
         # Set point
-        self.setpoint1 = 30
-        self.setpoint2 = 30
+        self.setpoint1 = 15
+        self.setpoint2 = 15
         self.h3_set = 0
         self.h4_set = 0
 
         # variables for threading
         self.stopped = True
         self.t = None
+
+
 
     def imprimir_lista(self, lista):
         for it in lista:
@@ -106,23 +109,26 @@ class RunPID:
             # self.v1ff = (sqrt(2*g*h3_set)*a3)/((1-y2)*k2)
             # self.v2ff = (sqrt(2*g*h4_set)*a4)/((1-y1)*k1)
 
-            print('######PID########')
-            self.H1.status()
-            self.H2.status()
-
             V1 = self.H1.u
             V2 = self.H2.u
 
-            print('V_PID', '{:.4f}'.format(V1), '{:.4f}'.format(V2))
+            if self.debug:
+                print('######PID########')
+                self.H1.status()
+                self.H2.status()
 
-            print('######PLANT########')
-            print('hs', '{:.2f}'.format(self.h[2].get_value()), '{:.2f}'.format(self.h[3].get_value()))
-            print('hi', '{:.2f}'.format(self.h[0].get_value()), '{:.2f}'.format(self.h[1].get_value()))
+                print('V_PID', '{:.4f}'.format(V1), '{:.4f}'.format(V2))
+
+                print('######PLANT########')
+                print('hs', '{:.2f}'.format(self.h[2].get_value()), '{:.2f}'.format(self.h[3].get_value()))
+                print('hi', '{:.2f}'.format(self.h[0].get_value()), '{:.2f}'.format(self.h[1].get_value()))
 
 
-            print('######SET########')
-            print('h: ', end='')
-            print('{:.4f}'.format(self.H1.setPoint),'{:.4f}'.format(self.H2.setPoint))
+                print('######SET########')
+                print('h: ', end='')
+                print('{:.4f}'.format(self.H1.setPoint),'{:.4f}'.format(self.H2.setPoint))
+
+                print()
 
             if abs(V1) <= 1:
                 self.v[0].set_value(V1)
@@ -134,6 +140,6 @@ class RunPID:
             else:
                 self.v[1].set_value(V2/abs(V2))
 
-            print()
+
 
 
