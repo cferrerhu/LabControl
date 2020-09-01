@@ -39,12 +39,17 @@ class PID:
         state['e_P'] = self.P
         state['e_I'] = self.I
         state['e_D'] = self.D
+
         state['k_P'] = self.Kp
         state['k_I'] = self.Ki
         state['k_D'] = self.Kd
         state['k_w'] = self.Kw
+
         state['u'] = self.u
         state['uO'] = self.uOriginal
+
+        state['set_p'] = self.setPoint
+        state['epoch'] = time.time()
         return state
 
 

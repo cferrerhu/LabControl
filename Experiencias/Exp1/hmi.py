@@ -302,6 +302,8 @@ def update_output(input1, input2):
     if 'setpoint1.value' in ctx.triggered[0].values() and input1 is not None:
         if input1 <= 50 and input1 >=0:
             run_pid.setpoint1 = input1
+            run_pid.setPoint_pid()
+            print('Set point 1 changed to', run_pid.H1.setPoint)
             return f'SetPoint Tank 1: {input1}'
         else:
             return 'Set the SetPoint of Tank 1 between 0 and 50'
@@ -309,6 +311,8 @@ def update_output(input1, input2):
     if 'setpoint2.value' in ctx.triggered[0].values() and input2 is not None:
         if input2 <= 50 and input2 >=0:
             run_pid.setpoint2 = input2
+            run_pid.setPoint_pid()
+            print('Set point 2 changed to', run_pid.H2.setPoint)
             return f'SetPoint Tank 2: {input2}'
         else:
             return 'Set the SetPoint of Tank 2 between 0 and 50'
