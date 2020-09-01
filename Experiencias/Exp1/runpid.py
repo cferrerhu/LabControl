@@ -31,25 +31,6 @@ class RunPID:
         self.v = [v1, v2]
         self.r = [r1, r2]
 
-        # Parameters
-        self.y1 = 0.7
-        self.y2 = 0.6
-
-        self.A1 = 28 # area del tanque
-        self.A2 = 32
-        self.A3 = 28
-        self.A4 = 32
-
-        self.a1 = 0.071 # area de la apertura
-        self.a2 = 0.057
-        self.a3 = 0.071
-        self.a4 = 0.057
-
-        self.k1 = 3.33
-        self.k2 = 3.33
-
-        self.g = 981
-
         # PID
         self.Kp1 = 5
         self.Kp2 = 5
