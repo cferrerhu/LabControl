@@ -4,6 +4,7 @@ import dash
 import dash_daq as daq
 import dash_html_components as html
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 
@@ -102,11 +103,13 @@ data_record = Record(values, run_pid, 'csv')
 
 app = dash.Dash()
 #app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/dZVMbK.css"})
+#app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/dZVMbK.css"})
+app.css.append_css({"external_url": "https://github.com/plotly/dash-core-components/blob/master/dash_core_components/react-select@1.0.0-rc.3.min.css"})
 
 
 app.layout = html.Div([
-    html.H2("Dashboard Control de Tanques"),
+    html.H2(children="Dashboard Control de Tanques", style={'text-align':
+        'center'}),
     html.P(id='placeholder'),
     html.Div([
         dcc.Graph(id='live-update-graph'),
@@ -164,26 +167,8 @@ app.layout = html.Div([
                     ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'})
                 ], style={'background': '#D3D3D3', 'margin-right': '10px',
                     'margin-top':'10px', 'margin-left': '10px'}),
+            # Right panel
             html.Div([
-                html.Div([html.Div(id='file-selection', children='Select the file extension'),
-                    dcc.Dropdown(
-                        id='file-dropdown',
-                        style={'height': '40px', 'width': '120px'},
-                        options=[
-                        {'label': 'csv file', 'value': 'csv'},
-                        {'label': 'txt file', 'value': 'txt'},
-                        {'label': 'npy file', 'value': 'npy'}
-                        ],
-                        value='csv'
-                        ),
-                    html.Div(id='dd-output-container'),
-                    html.Div([
-                        html.Button('Start Recording', id='btn_record', n_clicks=0),
-                        html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
-                        html.Div(id='my-button-div', children='No recording')
-                    ])
-                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
                 html.Div([
                     daq.PowerButton(
                         id='my-boolean-switch',
@@ -194,51 +179,82 @@ app.layout = html.Div([
                             'display': 'flex', 'align-items': 'center',
                             'justify-content': 'center', 'margin-top': '10px',
                             'margin-bottom': '10px'}),
-                html.Div([
-                    html.I("Set the Setpoints for the tanks."),
-                    html.Br(),
-                    dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
-                    dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
-                    html.Div(id="output")
-                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                html.Div([
-                    html.I("Set the Voltage for the valves, from 0 to 1 [V]"),
-                    html.Br(),
-                    dcc.Input(id="Voltage1", type="number", placeholder="Voltage 1", debounce=True),
-                    dcc.Input(id="Voltage2", type="number", placeholder="Voltage 2", debounce=True),
-                    html.Div(id="Voltage-output")
-                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                html.Div([
-                    html.I("Set the flux Rate between 0 and 1" ),
-                    html.Br(),
-                    dcc.Input(id="Gamma1", type="number", placeholder="Flux Rate 1", debounce=True),
-                    dcc.Input(id="Gamma2", type="number", placeholder="Flux Rate 2", debounce=True),
-                    html.Div(id="Gamma-output")
-                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                html.Div([html.Div(id='Variable-selection', children='Select the variable of the PID'),
-                  dcc.Dropdown(
-                  id='k-dropdown',
-                  style={'height': '40px', 'width': '120px'},
-                  options=[
-                    {'label': 'Kp', 'value': 'Kp'},
-                    {'label': 'Kd', 'value': 'Kd'},
-                    {'label': 'Ki', 'value': 'Ki'},
-                    {'label': 'Kw', 'value': 'Kw'}
-                  ],
-                 value=''
-                ),
-        html.Div([
-            html.I("Set the variable" ),
-            html.Br(),
-            dcc.Input(id="K1", type="number", placeholder="K1", debounce=True),
-            dcc.Input(id="K2", type="number", placeholder="K2", debounce=True),
-            html.Div(id="K-output")
-        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-        )
-    ]), html.Div(id='alarm-item', children='No events reported')
+                dbc.Col([
+                    dbc.Row([
+                        html.Div(id='file-selection', children='Select the file extension'),
+                        dbc.Col([
+                            dcc.Dropdown(
+                                id='file-dropdown',
+                                style={'height': '40px', 'width': '120px'},
+                                options=[
+                                {'label': 'csv file', 'value': 'csv'},
+                                {'label': 'txt file', 'value': 'txt'},
+                                {'label': 'npy file', 'value': 'npy'}
+                                ],
+                                value='csv'
+                                )
+                        ]),
+                    ], justify='center'),
+                    dbc.Row([
+                        html.Div(id='dd-output-container'),
+                        dbc.Col([
+                            html.Div([
+                                html.Button('Start Recording', id='btn_record', n_clicks=0),
+                                html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
+                                html.Div(id='my-button-div', children='No recording')
+                            ])
+                        ]),
+                    ], justify='center'),
+                    dbc.Row([
+                        html.P("Set the Tanks Setpoints."),
+                        dbc.Col([
+                            dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
+                            dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
+                        ]),
+                        html.Div(id="output")
+                    ], justify='center'),
+                    dbc.Row([
+                        html.P("Set the Valves Voltage from 0 to 1 [V]"),
+                        dbc.Col([
+                            dcc.Input(id="Voltage1", type="number", placeholder="Voltage 1", debounce=True),
+                            dcc.Input(id="Voltage2", type="number", placeholder="Voltage 2", debounce=True),
+                        ]),
+                            html.Div(id="Voltage-output")
+                    ], justify='center'),
+                    dbc.Row([
+                        html.P("Set the flux Rate from 0 to 1" ),
+                        dbc.Col([
+                            dcc.Input(id="Gamma1", type="number", placeholder="Flux Rate 1", debounce=True),
+                            dcc.Input(id="Gamma2", type="number", placeholder="Flux Rate 2", debounce=True),
+                        ]),
+                            html.Div(id="Gamma-output")
+                    ], justify='center'),
+                    dbc.Row([
+                        html.Div([html.Div(id='Variable-selection',
+                            children='Select the variable of the PID')]),
+                        dbc.Col([
+                            dcc.Dropdown(
+                                id='k-dropdown',
+                                style={'height': '40px', 'width': '120px'},
+                                options=[
+                                    {'label': 'Kp', 'value': 'Kp'},
+                                    {'label': 'Kd', 'value': 'Kd'},
+                                    {'label': 'Ki', 'value': 'Ki'},
+                                    {'label': 'Kw', 'value': 'Kw'}
+                                ],
+                                value='')
+                        ])], justify='center'),
+                    dbc.Row([
+                        html.I("Set the variable" ),
+                        dbc.Col([
+                            dcc.Input(id="K1", type="number", placeholder="K1", debounce=True),
+                            dcc.Input(id="K2", type="number", placeholder="K2", debounce=True),
+                            html.Div(id="K-output")
+                        ])], align='center')]),
+                        html.Br(),
+                        html.Div(id='alarm-item',
+                            children='No events reported', style={'background':
+                                '#E3E3E3', 'text-align': 'center'})
                 ], style={'background': '#D3D3D3', 'margin-left': '10px', 'margin-top':
                     '10px', 'margin-right': '10px'})
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'top','justify-content': 'center', 'background': '#C3C3C3'})
