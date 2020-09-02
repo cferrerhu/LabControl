@@ -17,13 +17,21 @@ from runpid import RunPID
 
 T = np.linspace(0,1000, 1001)
 t = 0
-tDeque = deque(maxlen=100)
-h1Deque = deque(maxlen=100)
-h2Deque = deque(maxlen=100)
-h3Deque = deque(maxlen=100)
-h4Deque = deque(maxlen=100)
-v1Deque = deque(maxlen=100)
-v2Deque = deque(maxlen=100)
+tDeque = deque(maxlen=1000)
+h1Deque = deque(maxlen=1000)
+h2Deque = deque(maxlen=1000)
+h3Deque = deque(maxlen=1000)
+h4Deque = deque(maxlen=1000)
+v1Deque = deque(maxlen=1000)
+v2Deque = deque(maxlen=1000)
+
+tDeque.append(0)
+h1Deque.append(0)
+h2Deque.append(0)
+h3Deque.append(0)
+h4Deque.append(0)
+v1Deque.append(0)
+v2Deque.append(0)
 
 # Initialize opcua variables
 client = Client('opc.tcp://localhost:4840/freeopcua/server/')
@@ -66,9 +74,11 @@ app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/dZVMbK.css"
 
 app.layout = html.Div([
     html.H2("Dashboard Control de Tanques"),
+    html.P(id='placeholder'),
     html.Div([
         dcc.Graph(id='live-update-graph'),
-        dcc.Interval(id='interval-component',interval=1000, n_intervals=0)
+        dcc.Interval(id='interval-component',interval=2000, n_intervals=0),
+        dcc.Interval(id='interval-fast',interval=500, n_intervals=0)
         ], style={'margin-top': '10px', 'margin-bottom': '10px', 'margin-left':
             '10px', 'margin-right': '10px', 'background': '#D3D3D3'}),
         html.Div([
@@ -195,11 +205,7 @@ app.layout = html.Div([
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'top','justify-content': 'center', 'background': '#C3C3C3'})
     ], style={'align-items': 'center', 'background': '#B3B3B3'})
 
-
-
-
-
-@app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
+@app.callback(Output('placeholder', 'Style'), [Input('interval-fast', 'n_intervals')])
 def UpdateGraph(n):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque, v2Deque
 
@@ -210,7 +216,11 @@ def UpdateGraph(n):
     h4Deque.append(h4.get_value())
     v1Deque.append(v1.get_value())
     v2Deque.append(v2.get_value())
-    t += 1
+    t += 0.1
+
+@app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
+def UpdateGraph(n):
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque, v2Deque
 
     data = {'time': list(tDeque), 'h1': list(h1Deque), 'h2': list(h2Deque),
             'h3': list(h3Deque), 'h4': list(h4Deque)}
@@ -278,7 +288,7 @@ def update_tank(n):
 def update_output(value):
     #global data_record
     data_record.ext = value
-    return 'You have selected "{}" file extension to be storaged'.format(value)
+    return 'You have selected "{}" file extension to be stored'.format(value)
 
 
 @app.callback(
