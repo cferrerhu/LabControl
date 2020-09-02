@@ -33,10 +33,36 @@ h4Deque.append(0)
 v1Deque.append(0)
 v2Deque.append(0)
 
+alarmas = [0, 0, 0, 0]
+alarma_texto = ''
+
+style_global = {'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+
+class SubHandler(object):
+
+    """
+    Subscription Handler. To receive events from server for a subscription
+    data_change and event methods are called directly from receiving thread.
+    Do not do expensive, slow or network operation there. Create another
+    thread if you need to do such a thing
+    """
+
+    def datachange_notification(self, node, val, data):
+        thread_handler = threading.Thread(target=funcion_handler, args=(node, val))  # Se realiza la descarga por un thread
+        thread_handler.start()
+
+    def event_notification(self, event):
+        index = str(event.Message).find('Tanque')
+        tank = int(str(event.Message)[61])
+        alarmas[tank-1] = 1
+        alarma_texto = 'Alerta en tanque {}'.format(tank)
+
+
 # Initialize opcua variables
 client = Client('opc.tcp://localhost:4840/freeopcua/server/')
 client.connect()
 objects_node = client.get_objects_node()
+root_node = client.get_root_node()
 # Heights
 h1 = objects_node.get_child(['2:Proceso_Tanques', '2:Tanques', '2:Tanque1', '2:h'])
 h2 = objects_node.get_child(['2:Proceso_Tanques', '2:Tanques', '2:Tanque2', '2:h'])
@@ -48,6 +74,12 @@ v2 = objects_node.get_child(['2:Proceso_Tanques', '2:Valvulas', '2:Valvula2', '2
 # Ratios
 r1 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon1', '2:gamma'])
 r2 = objects_node.get_child(['2:Proceso_Tanques', '2:Razones', '2:Razon2', '2:gamma'])
+# Alarmas
+myevent = root_node.get_child(["0:Types", "0:EventTypes", "0:BaseEventType", "2:Alarma_nivel"])#Tipo de evento
+obj_event = objects_node.get_child(['2:Proceso_Tanques', '2:Alarmas', '2:Alarma_nivel'])#Objeto Evento
+handler_event = SubHandler()
+sub_event = client.create_subscription(100, handler_event)#Subscripción al evento
+handle_event = sub_event.subscribe_events(obj_event, myevent)
 
 # Initial conditions
 y1 = 0.6
@@ -198,14 +230,15 @@ app.layout = html.Div([
             dcc.Input(id="K2", type="number", placeholder="K2", debounce=True),
             html.Div(id="K-output")
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-        )
+        ),
+        html.P(id='alarm-item')
     ])
                 ], style={'background': '#D3D3D3', 'margin-left': '10px', 'margin-top':
                     '10px', 'margin-right': '10px'})
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'top','justify-content': 'center', 'background': '#C3C3C3'})
     ], style={'align-items': 'center', 'background': '#B3B3B3'})
 
-@app.callback(Output('placeholder', 'Style'), [Input('interval-fast', 'n_intervals')])
+@app.callback(Output('placeholder', 'children'), [Input('interval-fast', 'n_intervals')])
 def UpdateGraph(n):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque, v2Deque
 
@@ -217,6 +250,8 @@ def UpdateGraph(n):
     v1Deque.append(v1.get_value())
     v2Deque.append(v2.get_value())
     t += 0.1
+
+    return ''
 
 @app.callback(Output('live-update-graph', 'figure'), [Input('interval-component', 'n_intervals')])
 def UpdateGraph(n):
@@ -245,29 +280,33 @@ def UpdateGraph(n):
     return fig
 
 # Tanks
-@app.callback(dash.dependencies.Output('tank-1', 'value'), [Input('interval-component', 'n_intervals')])
+@app.callback([Output('tank-1', 'value'), Output('tank-1', 'color')], [Input('interval-component', 'n_intervals')])
 def update_tank(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h1Deque[-1], 3)
-    return value
+    color = '#FF0000' if value < 10 == 1 else '#ADE2FA'
+    return value, color
 
-@app.callback(dash.dependencies.Output('tank-2', 'value'), [Input('interval-component', 'n_intervals')])
+@app.callback([Output('tank-2', 'value'), Output('tank-2', 'color')], [Input('interval-component', 'n_intervals')])
 def update_tank(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h2Deque[-1], 3)
-    return value
+    color = '#FF0000' if value < 10 else '#ADE2FA'
+    return value, color
 
-@app.callback(dash.dependencies.Output('tank-3', 'value'), [Input('interval-component', 'n_intervals')])
+@app.callback([Output('tank-3', 'value'), Output('tank-3', 'color')], [Input('interval-component', 'n_intervals')])
 def update_tank(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h3Deque[-1], 3)
-    return value
+    color = '#FF0000' if value < 10 else '#ADE2FA'
+    return value, color
 
-@app.callback(dash.dependencies.Output('tank-4', 'value'), [Input('interval-component', 'n_intervals')])
+@app.callback([Output('tank-4', 'value'), Output('tank-4', 'color')], [Input('interval-component', 'n_intervals')])
 def update_tank(n):
-    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque
+    global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h4Deque[-1], 3)
-    return value
+    color = '#FF0000' if value < 10 else '#ADE2FA'
+    return value, color
 
 @app.callback(dash.dependencies.Output('valve-1', 'value'), [Input('interval-component', 'n_intervals')])
 def update_tank(n):
@@ -281,6 +320,11 @@ def update_tank(n):
     value = round(v2Deque[-1], 3)*100
     return value
 
+@app.callback(Output('alarm-item', 'children'), [Input('interval-component', 'n_intervals')])
+def update_text(n):
+    global t, tDeque, h1Deque, h2Deque, h3Deque, v2Deque, alarma_texto
+    value = alarma_texto
+    return value
 
 @app.callback(
     dash.dependencies.Output('dd-output-container', 'children'),
