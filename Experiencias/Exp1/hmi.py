@@ -55,8 +55,8 @@ v2.set_value(0)
 
 values = [h1, h2, h3, h4, v1, v2, r1, r2]
 
-data_record = Record(values, 'csv')
 run_pid = RunPID(values)
+data_record = Record(values, run_pid, 'csv')
 
 
 app = dash.Dash()
@@ -273,9 +273,9 @@ def update_output(value):
      dash.dependencies.Input('btn_norecord', 'n_clicks')])
 def record(btn_r, btn_nr):
     ctx = dash.callback_context
-    print(f'ctx states:{ctx.states}')
-    print(f'ctx triggered:{ctx.triggered}')
-    print(f'ctx inputs:{ctx.inputs}')
+    # print(f'ctx states:{ctx.states}')
+    # print(f'ctx triggered:{ctx.triggered}')
+    # print(f'ctx inputs:{ctx.inputs}')
     if 'btn_record.n_clicks' in ctx.triggered[0].values():
         if data_record.stopped:
 
