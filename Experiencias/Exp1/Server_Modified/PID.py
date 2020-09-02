@@ -28,6 +28,8 @@ class PID:
         self.u = 0
         self.uOriginal = 0
 
+        self.pole = 5
+
         self.debug = debug
 
     def status(self):
@@ -35,21 +37,21 @@ class PID:
             print(self.name, end=': ')
             print('P I D U', '{:.2f}'.format(self.P), '{:.2f}'.format(self.I), '{:.2f}'.format(self.D), '{:.2f}'.format(self.uOriginal))
             #print('U Umod', '{:.2f}'.format(self.uOriginal), '{:.2f}'.format(self.u))
-        state = {}
-        state['e_P'] = self.P
-        state['e_I'] = self.I
-        state['e_D'] = self.D
-
-        state['k_P'] = self.Kp
-        state['k_I'] = self.Ki
-        state['k_D'] = self.Kd
-        state['k_w'] = self.Kw
-
-        state['u'] = self.u
-        state['uO'] = self.uOriginal
-
-        state['set_p'] = self.setPoint
-        state['epoch'] = time.time()
+        state = [self.P, self.I, self.D, self.Kp, self.Ki, self.Kd, self.Kw, self.u, self.uOriginal, self.setPoint, self.pole]
+        # state['e_P'] = self.P
+        # state['e_I'] = self.I
+        # state['e_D'] = self.D
+        #
+        # state['k_P'] = self.Kp
+        # state['k_I'] = self.Ki
+        # state['k_D'] = self.Kd
+        # state['k_w'] = self.Kw
+        #
+        # state['u'] = self.u
+        # state['uO'] = self.uOriginal
+        #
+        # state['set_p'] = self.setPoint
+        # state['epoch'] = time.time()
         return state
 
 
@@ -59,12 +61,12 @@ class PID:
         if len(self.pastD) > self.max_D_len:
             self.pastD = self.pastD[1:]
 
-        pole = 5
-        if sf < 2*pole:
-            pole = (sf - 0.001)/2
+        # self.pole = 5
+        if sf < 2*self.pole:
+            self.pole = (sf - 0.001)/2
 
 
-        iir_b, iir_a = signal.butter(2, pole, btype="lowpass", fs=sf)
+        iir_b, iir_a = signal.butter(2, self.pole, btype="lowpass", fs=sf)
         xs = signal.lfilter(iir_b, iir_a, self.pastD)
 
         return xs[-1]
@@ -104,4 +106,3 @@ class PID:
         self.last_error = error
         #print('{:.2f}'.format(self.u), end=' ')
         return self.u
-
