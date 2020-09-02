@@ -1,5 +1,5 @@
 import time
-from scipy.integrate import odeint
+from scipy import signal
 
 class PID:
     def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=[0, 1], debug=False):
@@ -54,12 +54,20 @@ class PID:
 
 
 
-    def LP_kd(self, lpf_val):
+    def LP_kd(self, lpf_val, sf):
         self.pastD.append(lpf_val)
         if len(self.pastD) > self.max_D_len:
             self.pastD = self.pastD[1:]
 
-        return sum(self.pastD) / len(self.pastD)
+        pole = 5
+        if sf < 2*pole:
+            pole = (sf - 0.001)/2
+
+
+        iir_b, iir_a = signal.butter(2, pole, btype="lowpass", fs=sf)
+        xs = signal.lfilter(iir_b, iir_a, self.pastD)
+
+        return xs[-1]
 
 
     def update(self, value):
@@ -81,7 +89,7 @@ class PID:
             self.I = self.I/abs(self.I)
 
         if delta_time > 0:
-            self.D = self.LP_kd(self.Kd*delta_error/delta_time)
+            self.D = self.LP_kd(self.Kd*delta_error/delta_time, 1/delta_time)
 
         self.uOriginal = self.P + self.I + self.D
 
