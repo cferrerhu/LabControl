@@ -57,7 +57,7 @@ class SubHandler(object):
         index = str(event.Message).find('Tanque')
         tank = int(str(event.Message)[61])
         alarmas[tank-1] = 1
-        alarma_texto = 'Alerta en tanque {}'.format(tank)
+        alarma_texto = 'Warning in Tank {}'.format(tank)
 
 
 # Initialize opcua variables
@@ -121,31 +121,31 @@ app.layout = html.Div([
             html.Div(
             [
                 html.Div([
-                    html.Div([html.H4('Tanque 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
                         daq.Tank(id='tank-1', value=5, min=0, max=50,
                             showCurrentValue=True, units='cm',
-                            style={'margin-left': '50px'})], style={'display':
-                                'inline-block'}),
-                    html.Div([html.H4('Tanque 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                            label='Tank 1',
+                            labelPosition='top',
+                            style={'margin-left': '50px'}),
                         daq.Tank(id='tank-2', value=5, min=0, max=50,
                             showCurrentValue=True, units='cm',
-                            style={'margin-left': '50px'})], style={'display':
-                                'inline-block'}),
-                    html.Div([html.H4('Tanque 3', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                            label='Tank 2',
+                            labelPosition='top',
+                            style={'margin-left': '50px'}),
                         daq.Tank(id='tank-3', value=5, min=0, max=50,
                             showCurrentValue=True, units='cm',
-                            style={'margin-left': '50px'})], style={'display':
-                                'inline-block'}),
-                    html.Div([html.H4('Tanque 4', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                            label='Tank 3',
+                            labelPosition='top',
+                            style={'margin-left': '50px'}),
                         daq.Tank(id='tank-4', value=5, min=0, max=50,
                             showCurrentValue=True, units='cm',
-                            style={'margin-left': '50px'})], style={'display':
-                                'inline-block'}),
+                            label='Tank 4',
+                            labelPosition='top',
+                            style={'margin-left': '50px'}),
                     ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
                 ),
                 html.Div([
                     html.Div([
-                        html.H4('Válvula 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        html.H4('Valve 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
                         daq.Gauge(
                             id='valve-1',
                             showCurrentValue=True,
@@ -155,7 +155,7 @@ app.layout = html.Div([
                             value=50
                             )], style={'display':'inline-block'}),
                     html.Div([
-                        html.H4('Válvula 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        html.H4('Valve 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
                         daq.Gauge(
                             id='valve-2',
                             showCurrentValue=True,
@@ -253,6 +253,7 @@ app.layout = html.Div([
                             html.Div(id="K-output")
                         ])], align='center')]),
                         html.Br(),
+                        html.Div(children='Last Warning:'),
                         html.Div(id='alarm-item',
                             children='No events reported', style={'background':
                                 '#E3E3E3', 'text-align': 'center'})
@@ -303,29 +304,33 @@ def UpdateGraph(n):
     return fig
 
 # Tanks
-@app.callback([Output('tank-1', 'value'), Output('tank-1', 'color')], [Input('interval-component', 'n_intervals')])
-def update_tank(n):
+@app.callback([Output('tank-1', 'value'), Output('tank-1', 'color'),
+    Output('tank-1', 'label')], [Input('interval-component', 'n_intervals'), Input('my-boolean-switch', 'on')])
+def update_tank(n, on):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h1Deque[-1], 3)
     color = '#FF0000' if value < 10 else '#ADE2FA'
-    return value, color
+    label = 'Tank 1' if not on else 'Tank 1 ({}cm)'.format(run_pid.setpoint1)
+    return value, color, label
 
-@app.callback([Output('tank-2', 'value'), Output('tank-2', 'color')], [Input('interval-component', 'n_intervals')])
-def update_tank(n):
+@app.callback([Output('tank-2', 'value'), Output('tank-2', 'color'),
+    Output('tank-2', 'label')], [Input('interval-component', 'n_intervals'), Input('my-boolean-switch', 'on')])
+def update_tank(n, on):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h2Deque[-1], 3)
     color = '#FF0000' if value < 10 else '#ADE2FA'
-    return value, color
+    label = 'Tank 2' if not on else 'Tank 2 ({}cm)'.format(run_pid.setpoint1)
+    return value, color, label
 
-@app.callback([Output('tank-3', 'value'), Output('tank-3', 'color')], [Input('interval-component', 'n_intervals')])
-def update_tank(n):
+@app.callback([Output('tank-3', 'value'), Output('tank-3', 'color')], [Input('interval-component', 'n_intervals'), Input('my-boolean-switch', 'on')])
+def update_tank(n, on):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h3Deque[-1], 3)
     color = '#FF0000' if value < 10 else '#ADE2FA'
     return value, color
 
-@app.callback([Output('tank-4', 'value'), Output('tank-4', 'color')], [Input('interval-component', 'n_intervals')])
-def update_tank(n):
+@app.callback([Output('tank-4', 'value'), Output('tank-4', 'color')], [Input('interval-component', 'n_intervals'), Input('my-boolean-switch', 'on')])
+def update_tank(n, on):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h4Deque[-1], 3)
     color = '#FF0000' if value < 10 else '#ADE2FA'
