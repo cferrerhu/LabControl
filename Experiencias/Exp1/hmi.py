@@ -60,108 +60,119 @@ run_pid = RunPID(values)
 
 
 app = dash.Dash()
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+#app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/dZVMbK.css"})
 
 
-app.layout = html.Div(html.Div(
-    [
-    html.H2('Dashy: Mining water tank control'),
-    dcc.Graph(id='live-update-graph'),
-    dcc.Interval(id='interval-component',interval=100, n_intervals=0),
+app.layout = html.Div([
+    html.H2("Dashboard Control de Tanques"),
     html.Div([
-        html.Div([html.H4('Tanque 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
-            daq.Tank(id='tank-1', value=5, min=0, max=50,
-                showCurrentValue=True, units='cm',
-                style={'margin-left': '50px'})], style={'display':
-                    'inline-block'}),
-        html.Div([html.H4('Tanque 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
-            daq.Tank(id='tank-2', value=5, min=0, max=50,
-                showCurrentValue=True, units='cm',
-                style={'margin-left': '50px'})], style={'display':
-                    'inline-block'}),
-        html.Div([html.H4('Tanque 3', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
-            daq.Tank(id='tank-3', value=5, min=0, max=50,
-                showCurrentValue=True, units='cm',
-                style={'margin-left': '50px'})], style={'display':
-                    'inline-block'}),
-        html.Div([html.H4('Tanque 4', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
-            daq.Tank(id='tank-4', value=5, min=0, max=50,
-                showCurrentValue=True, units='cm',
-                style={'margin-left': '50px'})], style={'display':
-                    'inline-block'}),
-        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    ),
-    html.Div([
+        dcc.Graph(id='live-update-graph'),
+        dcc.Interval(id='interval-component',interval=1000, n_intervals=0)
+        ], style={'margin-top': '10px', 'margin-bottom': '10px', 'margin-left':
+            '10px', 'margin-right': '10px', 'background': '#D3D3D3'}),
         html.Div([
-            html.H4('Válvula 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
-            daq.Gauge(
-                id='valve-1',
-                showCurrentValue=True,
-                units="%",
-                min=0,
-                max=100,
-                value=50
-                )], style={'display':'inline-block'}),
-        html.Div([
-            html.H4('Válvula 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
-            daq.Gauge(
-                id='valve-2',
-                showCurrentValue=True,
-                units="%",
-                min=0,
-                max=100,
-                value=50
-            )], style={'display':'inline-block'})
-        ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    ),
-    html.Div([html.Div(id='file-selection', children='Select the file extension'),
-        dcc.Dropdown(
-            id='file-dropdown',
-            style={'height': '40px', 'width': '120px'},
-            options=[
-            {'label': 'csv file', 'value': 'csv'},
-            {'label': 'txt file', 'value': 'txt'},
-            {'label': 'npy file', 'value': 'npy'}
-            ],
-            value='csv'
-            ),
-        html.Div(id='dd-output-container'),
-        html.Div([
-            html.Button('Start Recording', id='btn_record', n_clicks=0),
-            html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
-            html.Div(id='my-button-div', children='No recording')
-        ])
-    ]),
-    html.Div([
-        daq.PowerButton(
-            id='my-boolean-switch',
-            on=False
-        ),
-        html.Div(id='boolean-switch-output', children='Manual Mode'),
-        html.I("Set the Setpoints for the tanks."),
-        html.Br(),
-        dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
-        dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
-        html.Div(id="output")
-    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    ),
-    html.Div([
-        html.I("Set the Voltage for the valves, from 0 to 1 [V]"),
-        html.Br(),
-        dcc.Input(id="Voltage1", type="number", placeholder="Voltage 1", debounce=True),
-        dcc.Input(id="Voltage2", type="number", placeholder="Voltage 2", debounce=True),
-        html.Div(id="Voltage-output")
-    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    ),
-    html.Div([
-        html.I("Set the flux Rate between 0 and 1" ),
-        html.Br(),
-        dcc.Input(id="Gamma1", type="number", placeholder="Flux Rate 1", debounce=True),
-        dcc.Input(id="Gamma2", type="number", placeholder="Flux Rate 2", debounce=True),
-        html.Div(id="Gamma-output")
-    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-    )
-]))
+            html.Div(
+            [
+                html.Div([
+                    html.Div([html.H4('Tanque 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        daq.Tank(id='tank-1', value=5, min=0, max=50,
+                            showCurrentValue=True, units='cm',
+                            style={'margin-left': '50px'})], style={'display':
+                                'inline-block'}),
+                    html.Div([html.H4('Tanque 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        daq.Tank(id='tank-2', value=5, min=0, max=50,
+                            showCurrentValue=True, units='cm',
+                            style={'margin-left': '50px'})], style={'display':
+                                'inline-block'}),
+                    html.Div([html.H4('Tanque 3', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        daq.Tank(id='tank-3', value=5, min=0, max=50,
+                            showCurrentValue=True, units='cm',
+                            style={'margin-left': '50px'})], style={'display':
+                                'inline-block'}),
+                    html.Div([html.H4('Tanque 4', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        daq.Tank(id='tank-4', value=5, min=0, max=50,
+                            showCurrentValue=True, units='cm',
+                            style={'margin-left': '50px'})], style={'display':
+                                'inline-block'}),
+                    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                html.Div([
+                    html.Div([
+                        html.H4('Válvula 1', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        daq.Gauge(
+                            id='valve-1',
+                            showCurrentValue=True,
+                            units="%",
+                            min=0,
+                            max=100,
+                            value=50
+                            )], style={'display':'inline-block'}),
+                    html.Div([
+                        html.H4('Válvula 2', style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}),
+                        daq.Gauge(
+                            id='valve-2',
+                            showCurrentValue=True,
+                            units="%",
+                            min=0,
+                            max=100,
+                            value=50
+                        )], style={'display':'inline-block'})
+                    ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'})
+                ], style={'background': '#D3D3D3', 'margin-right': '10px',
+                    'margin-top':'10px', 'margin-left': '10px'}),
+            html.Div([
+                html.Div([html.Div(id='file-selection', children='Select the file extension'),
+                    dcc.Dropdown(
+                        id='file-dropdown',
+                        style={'height': '40px', 'width': '120px'},
+                        options=[
+                        {'label': 'csv file', 'value': 'csv'},
+                        {'label': 'txt file', 'value': 'txt'},
+                        {'label': 'npy file', 'value': 'npy'}
+                        ],
+                        value='csv'
+                        ),
+                    html.Div(id='dd-output-container'),
+                    html.Div([
+                        html.Button('Start Recording', id='btn_record', n_clicks=0),
+                        html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
+                        html.Div(id='my-button-div', children='No recording')
+                    ])
+                ]),
+                html.Div([
+                    daq.PowerButton(
+                        id='my-boolean-switch',
+                        on=False
+                    ),
+                    html.Div(id='boolean-switch-output', children='Manual Mode'),
+                    html.I("Set the Setpoints for the tanks."),
+                    html.Br(),
+                    dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
+                    dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
+                    html.Div(id="output")
+                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                html.Div([
+                    html.I("Set the Voltage for the valves, from 0 to 1 [V]"),
+                    html.Br(),
+                    dcc.Input(id="Voltage1", type="number", placeholder="Voltage 1", debounce=True),
+                    dcc.Input(id="Voltage2", type="number", placeholder="Voltage 2", debounce=True),
+                    html.Div(id="Voltage-output")
+                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                html.Div([
+                    html.I("Set the flux Rate between 0 and 1" ),
+                    html.Br(),
+                    dcc.Input(id="Gamma1", type="number", placeholder="Flux Rate 1", debounce=True),
+                    dcc.Input(id="Gamma2", type="number", placeholder="Flux Rate 2", debounce=True),
+                    html.Div(id="Gamma-output")
+                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                )
+                ], style={'background': '#D3D3D3', 'margin-left': '10px', 'margin-top':
+                    '10px', 'margin-right': '10px'})
+        ], style={'width': '100%', 'display': 'flex', 'align-items': 'top','justify-content': 'center', 'background': '#C3C3C3'})
+    ], style={'align-items': 'center', 'background': '#B3B3B3'})
 
 
 
@@ -195,7 +206,9 @@ def UpdateGraph(n):
 
     fig.update_layout(title='Tank heights',
                        xaxis_title='Time (s)',
-                       yaxis_title='Height (cm)')
+                       yaxis_title='Height (cm)',
+                       plot_bgcolor="#F3F6FA",
+                       paper_bgcolor='rgba(0,0,0,0)')
 
     return fig
 
