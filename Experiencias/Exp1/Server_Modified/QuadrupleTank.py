@@ -21,7 +21,7 @@ class QuadrupleTank():
         self.rho = 1 # g/cm^3
         self.kout = 0.5
         self.kin = 3.33
-        
+
         self.time_scaling = 1
         self.gamma = [0.7, 0.6] # %
         self.volt = [0., 0.] # %
@@ -417,7 +417,7 @@ cliente.conectar()
 ######################### Main loop #################################
 
 # Setup
-x0=[20, 20, 20, 20] #Condición inicial de los tanques
+x0=[40, 40, 40, 40] #Condición inicial de los tanques
 #x0=[33.915, 35.224, 4.485, 3.914] #Condición inicial de los tanques (eq para u_eq = (0.5,0.5)) y gamma = (0.7,0.6)
 #x0=[28.029, 43.489, 10.091, 15.656] #Condic
 
