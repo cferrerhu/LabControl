@@ -95,9 +95,11 @@ class RunPID:
 
             if self.debug:
                 print('######PID########')
-                self.H1.status()
-                self.H2.status()
 
+            self.H1.status()
+            self.H2.status()
+
+            if self.debug:
                 print('V_PID', '{:.4f}'.format(V1), '{:.4f}'.format(V2))
 
                 print('######PLANT########')
