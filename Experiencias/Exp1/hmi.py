@@ -52,6 +52,7 @@ class SubHandler(object):
         thread_handler.start()
 
     def event_notification(self, event):
+        global alarma_texto
         index = str(event.Message).find('Tanque')
         tank = int(str(event.Message)[61])
         alarmas[tank-1] = 1
@@ -181,13 +182,19 @@ app.layout = html.Div([
                         html.Button('Stop Recording', id='btn_norecord', n_clicks=0),
                         html.Div(id='my-button-div', children='No recording')
                     ])
-                ]),
+                ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
                 html.Div([
                     daq.PowerButton(
                         id='my-boolean-switch',
                         on= not run_pid.stopped
                     ),
-                    html.Div(id='boolean-switch-output', children='Manual Mode'),
+                    html.Div(id='boolean-switch-output',
+                        children='Manual Mode')], style={'width': '100%',
+                            'display': 'flex', 'align-items': 'center',
+                            'justify-content': 'center', 'margin-top': '10px',
+                            'margin-bottom': '10px'}),
+                html.Div([
                     html.I("Set the Setpoints for the tanks."),
                     html.Br(),
                     dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
@@ -230,9 +237,8 @@ app.layout = html.Div([
             dcc.Input(id="K2", type="number", placeholder="K2", debounce=True),
             html.Div(id="K-output")
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-        ),
-        html.P(id='alarm-item')
-    ])
+        )
+    ]), html.Div(id='alarm-item', children='No events reported')
                 ], style={'background': '#D3D3D3', 'margin-left': '10px', 'margin-top':
                     '10px', 'margin-right': '10px'})
         ], style={'width': '100%', 'display': 'flex', 'align-items': 'top','justify-content': 'center', 'background': '#C3C3C3'})
@@ -284,7 +290,7 @@ def UpdateGraph(n):
 def update_tank(n):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h1Deque[-1], 3)
-    color = '#FF0000' if value < 10 == 1 else '#ADE2FA'
+    color = '#FF0000' if value < 10 else '#ADE2FA'
     return value, color
 
 @app.callback([Output('tank-2', 'value'), Output('tank-2', 'color')], [Input('interval-component', 'n_intervals')])
