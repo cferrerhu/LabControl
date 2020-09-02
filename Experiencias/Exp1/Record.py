@@ -12,8 +12,8 @@ class Record:
         self.values = values
         self.stopped = True
         self.fields  = ['time', 'h_1', 'h_2', 'h_3', 'h_4', 'v_1', 'v_2', 'r_1', 'r_2', \
-                        'e_P_1', 'e_I_1', 'e_D_1', 'k_P_1', 'k_I_1', 'k_D_1', 'k_w_1', 'u_sat_1', 'u0_1', 'setPoint_1', 'Pole_1',\
-                        'e_P_2', 'e_I_2', 'e_D_2', 'k_P_2', 'k_I_2', 'k_D_2', 'k_w_2', 'u_sat_2', 'u0_2', 'setPoint_2', 'Pole_2']
+                        'e_P_1', 'e_I_1', 'e_D_1', 'k_P_1', 'k_I_1', 'k_D_1', 'k_w_1', 'u_sat_1', 'u0_1', 'setPoint_1', 'Pole_1', 'e_quad_1'\
+                        'e_P_2', 'e_I_2', 'e_D_2', 'k_P_2', 'k_I_2', 'k_D_2', 'k_w_2', 'u_sat_2', 'u0_2', 'setPoint_2', 'Pole_2', 'e_quad_2']
         self.t = None
         self.name = 'RecordData'
         self.namenpy = None
