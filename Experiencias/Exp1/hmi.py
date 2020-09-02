@@ -88,10 +88,10 @@ y1 = 0.6
 y2 = 0.6
 r1.set_value(y1)
 r2.set_value(y2)
-h1.set_value(20)
-h2.set_value(20)
-h3.set_value(20)
-h4.set_value(20)
+h1.set_value(40) # initial condition
+h2.set_value(40) # initial condition
+h3.set_value(40) # initial condition
+h4.set_value(40) # initial condition
 v1.set_value(0)
 v2.set_value(0)
 
@@ -208,8 +208,8 @@ app.layout = html.Div([
                     dbc.Row([
                         html.P("Set the Tanks Setpoints."),
                         dbc.Col([
-                            dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 25", debounce=True),
-                            dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 25", debounce=True),
+                            dcc.Input(id="setpoint1", type="number", placeholder="SetPoint 1, Default 15", debounce=True),
+                            dcc.Input(id="setpoint2", type="number", placeholder="SetPoint 2, Default 15", debounce=True),
                         ]),
                         html.Div(id="output")
                     ], justify='center'),
@@ -240,7 +240,8 @@ app.layout = html.Div([
                                     {'label': 'Kp', 'value': 'Kp'},
                                     {'label': 'Kd', 'value': 'Kd'},
                                     {'label': 'Ki', 'value': 'Ki'},
-                                    {'label': 'Kw', 'value': 'Kw'}
+                                    {'label': 'Kw', 'value': 'Kw'},
+                                    {'label': 'Pole', 'value': 'Pole'}
                                 ],
                                 value='')
                         ])], justify='center'),
@@ -534,6 +535,14 @@ def update_output(k, k1, k2):
         if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
             run_pid.H2.Kw = k2
             return f'{k}2 set to {k2}'
+
+    elif k == 'Pole':
+        if 'K1.value' in ctx.triggered[0].values() and k1 is not None:
+            run_pid.H1.pole = k1
+            return f'{k}1 set to {k1} Hz'
+        if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
+            run_pid.H2.pole = k2
+            return f'{k}2 set to {k2} Hz'
 
 
 
