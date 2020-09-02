@@ -2,7 +2,7 @@ import time
 from scipy import signal
 
 class PID:
-    def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=[0, 1], debug=False):
+    def __init__(self, Kp=0.2, Ki=0.1, Kd=0, Kw=0.3, voltmax=[0, 1], Imax=1, debug=False):
         self.name = ''
         self.Kp = Kp
         self.Ki = Ki
@@ -10,7 +10,7 @@ class PID:
         self.Kw = Kw
 
         self.umax = voltmax
-        self.Imax = 1
+        self.Imax = Imax
         self.pastD = []
         self.max_D_len = 10
 
@@ -28,7 +28,7 @@ class PID:
         self.u = 0
         self.uOriginal = 0
 
-        self.pole = 5
+        self.pole = 10
 
         self.debug = debug
 
@@ -88,7 +88,7 @@ class PID:
         self.I += (self.Ki*error + self.Kw*(self.u - self.uOriginal))*delta_time
 
         if abs(self.I) > self.Imax: #limitar acción I a +-1
-            self.I = self.I/abs(self.I)
+            self.I = self.Imax * self.I/abs(self.I)
 
         if delta_time > 0:
             self.D = self.LP_kd(self.Kd*delta_error/delta_time, 1/delta_time)

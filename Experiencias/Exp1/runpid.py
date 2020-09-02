@@ -40,8 +40,8 @@ class RunPID:
         self.Kd2 = 0.1
         self.Kw1 = 0.02
         self.Kw2 = 0.02
-        self.H1 = PID(Kp=self.Kp1, Ki=self.Ki1, Kd=self.Kd1, Kw=self.Kw1, debug=debug)
-        self.H2 = PID(Kp=self.Kp2, Ki=self.Ki2, Kd=self.Kd2, Kw=self.Kw2, debug=debug)
+        self.H1 = PID(Kp=self.Kp1, Ki=self.Ki1, Kd=self.Kd1, Kw=self.Kw1, Imax=0.75, debug=debug)
+        self.H2 = PID(Kp=self.Kp2, Ki=self.Ki2, Kd=self.Kd2, Kw=self.Kw2, Imax=0.8, debug=debug)
 
         self.H1.name = 'T1'
         self.H2.name = 'T2'
