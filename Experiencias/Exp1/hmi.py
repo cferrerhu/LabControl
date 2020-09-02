@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import threading
 import dash
@@ -36,6 +37,8 @@ v2Deque.append(0)
 
 alarmas = [0, 0, 0, 0]
 alarma_texto = ''
+
+start_time = time.time()
 
 style_global = {'width': '100%', 'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
 
@@ -266,14 +269,13 @@ app.layout = html.Div([
 def UpdateGraph(n):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, v1Deque, v2Deque
 
-    tDeque.append(t)
+    tDeque.append(time.time()-start_time)
     h1Deque.append(h1.get_value())
     h2Deque.append(h2.get_value())
     h3Deque.append(h3.get_value())
     h4Deque.append(h4.get_value())
     v1Deque.append(v1.get_value())
     v2Deque.append(v2.get_value())
-    t += 0.1
 
     return ''
 
@@ -319,7 +321,7 @@ def update_tank(n, on):
     global t, tDeque, h1Deque, h2Deque, h3Deque, h4Deque, alarmas
     value = round(h2Deque[-1], 3)
     color = '#FF0000' if value < 10 else '#ADE2FA'
-    label = 'Tank 2' if not on else 'Tank 2 ({}cm)'.format(run_pid.setpoint1)
+    label = 'Tank 2' if not on else 'Tank 2 ({}cm)'.format(run_pid.setpoint2)
     return value, color, label
 
 @app.callback([Output('tank-3', 'value'), Output('tank-3', 'color')], [Input('interval-component', 'n_intervals'), Input('my-boolean-switch', 'on')])
