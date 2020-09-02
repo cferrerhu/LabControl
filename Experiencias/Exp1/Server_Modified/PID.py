@@ -29,6 +29,7 @@ class PID:
         self.uOriginal = 0
 
         self.pole = 10
+        self.error_cuad = 0
 
         self.debug = debug
 
@@ -37,7 +38,7 @@ class PID:
             print(self.name, end=': ')
             print('P I D U', '{:.2f}'.format(self.P), '{:.2f}'.format(self.I), '{:.2f}'.format(self.D), '{:.2f}'.format(self.uOriginal))
             #print('U Umod', '{:.2f}'.format(self.uOriginal), '{:.2f}'.format(self.u))
-        state = [self.P, self.I, self.D, self.Kp, self.Ki, self.Kd, self.Kw, self.u, self.uOriginal, self.setPoint, self.pole]
+        state = [self.P, self.I, self.D, self.Kp, self.Ki, self.Kd, self.Kw, self.u, self.uOriginal, self.setPoint, self.pole, self.error_cuad]
         # state['e_P'] = self.P
         # state['e_I'] = self.I
         # state['e_D'] = self.D
@@ -80,6 +81,8 @@ class PID:
         delta_time = self.current_time - self.last_time #calcular delta t, entre calls
 
         delta_error = error - self.last_error
+
+        self.error_cuad += error*error*delta_time
 
         if delta_time < self.sample_time:
             time.sleep(self.sample_time - delta_time)

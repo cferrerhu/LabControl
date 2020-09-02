@@ -87,7 +87,7 @@ sub_event = client.create_subscription(100, handler_event)#Subscripción al even
 handle_event = sub_event.subscribe_events(obj_event, myevent)
 
 # Initial conditions
-y1 = 0.6
+y1 = 0.7
 y2 = 0.6
 r1.set_value(y1)
 r2.set_value(y2)
