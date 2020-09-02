@@ -241,7 +241,7 @@ app.layout = html.Div([
                                     {'label': 'Kd', 'value': 'Kd'},
                                     {'label': 'Ki', 'value': 'Ki'},
                                     {'label': 'Kw', 'value': 'Kw'},
-                                    {'label': 'Pole', 'value': 'Pole'}
+                                    {'label': 'fc', 'value': 'Pole'}
                                 ],
                                 value='')
                         ])], justify='center'),
@@ -539,10 +539,10 @@ def update_output(k, k1, k2):
     elif k == 'Pole':
         if 'K1.value' in ctx.triggered[0].values() and k1 is not None:
             run_pid.H1.pole = k1
-            return f'{k}1 set to {k1} Hz'
+            return f'fc1 set to {k1} Hz'
         if 'K2.value' in ctx.triggered[0].values() and k2 is not None:
             run_pid.H2.pole = k2
-            return f'{k}2 set to {k2} Hz'
+            return f'fc2 set to {k2} Hz'
 
 
 
